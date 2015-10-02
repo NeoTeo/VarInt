@@ -35,7 +35,7 @@ enum VarIntError : ErrorType {
 
 /** putVarInt encodes a UInt64 into a buffer and returns it.
  */
-func putUVarInt(value: UInt64) -> [UInt8] {
+public func putUVarInt(value: UInt64) -> [UInt8] {
     var buffer = [UInt8]()
     var val: UInt64 = value
     
@@ -56,7 +56,7 @@ func putUVarInt(value: UInt64) -> [UInt8] {
         n  < 0: value larger than 64 bits (overflow)
         and -n is the number of bytes read
  */
-func uVarInt(buffer: [UInt8]) -> (UInt64, Int) {
+public func uVarInt(buffer: [UInt8]) -> (UInt64, Int) {
     
     var output: UInt64 = 0
     var counter = 0
@@ -79,7 +79,7 @@ func uVarInt(buffer: [UInt8]) -> (UInt64, Int) {
 
 /** putVarInt encodes an Int64 into a buffer and returns it.
 */
-func putVarInt(value: Int64) -> [UInt8] {
+public func putVarInt(value: Int64) -> [UInt8] {
 
     var unsignedValue = UInt64(value) << 1
     
@@ -98,7 +98,7 @@ func putVarInt(value: Int64) -> [UInt8] {
          n  < 0: value larger than 64 bits (overflow)
                  and -n is the number of bytes read
 */
-func varInt(buffer: [UInt8]) -> (Int64, Int) {
+public func varInt(buffer: [UInt8]) -> (Int64, Int) {
     
     let (unsignedValue, bytesRead)  = uVarInt(buffer)
     var value                       = Int64(unsignedValue >> 1)
@@ -111,7 +111,7 @@ func varInt(buffer: [UInt8]) -> (Int64, Int) {
 
 /** readUVarInt reads an encoded unsigned integer from the reader and returns
     it as an UInt64 */
-func readUVarInt(reader: NSInputStream) throws -> UInt64 {
+public func readUVarInt(reader: NSInputStream) throws -> UInt64 {
 
     var value: UInt64   = 0
     var shifter: UInt64 = 0
@@ -138,7 +138,7 @@ func readUVarInt(reader: NSInputStream) throws -> UInt64 {
 
 /** readVarInt reads an encoded signed integer from the reader and returns
     it as an Int64 */
-func readVarInt(reader: NSInputStream) throws -> Int64 {
+public func readVarInt(reader: NSInputStream) throws -> Int64 {
     
     let unsignedValue = try readUVarInt(reader)
     var value = Int64(unsignedValue >> 1)
@@ -149,5 +149,3 @@ func readVarInt(reader: NSInputStream) throws -> Int64 {
 
     return value
 }
-
-
