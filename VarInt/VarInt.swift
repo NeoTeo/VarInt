@@ -72,7 +72,7 @@ public func uVarInt(buffer: [UInt8]) -> (UInt64, Int) {
         
         output |= UInt64(byte & 0x7f)<<shifter
         shifter += 7
-        counter++
+        counter += 1
     }
     return (0,0)
 }
@@ -115,8 +115,9 @@ public func readUVarInt(reader: NSInputStream) throws -> UInt64 {
 
     var value: UInt64   = 0
     var shifter: UInt64 = 0
-
-    for var index = 0 ; ; index++ {
+    var index = 0
+    
+    repeat {
         var buffer = [UInt8](count: 10, repeatedValue: 0)
         
         if reader.read(&buffer, maxLength: 1) < 0 {
@@ -133,7 +134,8 @@ public func readUVarInt(reader: NSInputStream) throws -> UInt64 {
         }
         value |= UInt64(buf & 0x7f) << shifter
         shifter += 7
-    }
+        index += 1
+    } while true
 }
 
 /** readVarInt reads an encoded signed integer from the reader and returns
