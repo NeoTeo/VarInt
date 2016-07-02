@@ -28,7 +28,7 @@ class VarIntTests: XCTestCase {
     
     func testPerformanceExample() {
         // This is an example of a performance test case.
-        self.measureBlock {
+        self.measure {
             // Put the code you want to measure the time of here.
         }
     }
@@ -44,8 +44,8 @@ class VarIntTests: XCTestCase {
         
         let overflowBuffer: [UInt8] = [144, 192, 192, 129, 132, 136, 140, 144, 192, 192, 1, 1]
         do {
-            try streamUVarInt(overflowBuffer)
-        } catch VarIntError.Overflow {
+            try _ = streamUVarInt(overflowBuffer)
+        } catch VarIntError.overflow {
             print("try failed so the operation overflowed")
         } catch {
             XCTFail("try failed for an unexpected reason")
@@ -76,8 +76,8 @@ class VarIntTests: XCTestCase {
         
         let overflowBuffer: [UInt8] = [144, 192, 192, 129, 132, 136, 140, 144, 192, 192, 1, 1]
         do {
-            try streamVarInt(overflowBuffer)
-        } catch VarIntError.Overflow {
+            try _ = streamVarInt(overflowBuffer)
+        } catch VarIntError.overflow {
             print("try failed so the operation overflowed")
         } catch {
             XCTFail("try failed for an unexpected reason")
@@ -87,9 +87,9 @@ class VarIntTests: XCTestCase {
     
     
     /// Utility methods to avoid repetition
-    func streamVarInt(buffer: [UInt8]) throws -> Int64 {
-        let data: NSData = NSData(bytes: buffer, length: buffer.count)
-        let stream: NSInputStream = NSInputStream(data: data)
+    func streamVarInt(_ buffer: [UInt8]) throws -> Int64 {
+        let data: Data = Data(bytes: UnsafePointer<UInt8>(buffer), count: buffer.count)
+        let stream: InputStream = InputStream(data: data)
         stream.open()
         
         let result = try readVarInt(stream)
@@ -99,9 +99,9 @@ class VarIntTests: XCTestCase {
         return result
     }
     
-    func streamUVarInt(buffer: [UInt8]) throws -> UInt64 {
-        let data: NSData = NSData(bytes: buffer, length: buffer.count)
-        let stream: NSInputStream = NSInputStream(data: data)
+    func streamUVarInt(_ buffer: [UInt8]) throws -> UInt64 {
+        let data: Data = Data(bytes: UnsafePointer<UInt8>(buffer), count: buffer.count)
+        let stream: InputStream = InputStream(data: data)
         stream.open()
         
         let result = try readUVarInt(stream)

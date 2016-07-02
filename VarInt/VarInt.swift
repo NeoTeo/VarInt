@@ -28,14 +28,14 @@
 */
 import Foundation
 
-enum VarIntError : ErrorType {
-    case InputStreamRead
-    case Overflow
+enum VarIntError : ErrorProtocol {
+    case inputStreamRead
+    case overflow
 }
 
 /** putVarInt encodes a UInt64 into a buffer and returns it.
  */
-public func putUVarInt(value: UInt64) -> [UInt8] {
+public func putUVarInt(_ value: UInt64) -> [UInt8] {
     var buffer = [UInt8]()
     var val: UInt64 = value
     
@@ -56,7 +56,7 @@ public func putUVarInt(value: UInt64) -> [UInt8] {
         n  < 0: value larger than 64 bits (overflow)
         and -n is the number of bytes read
  */
-public func uVarInt(buffer: [UInt8]) -> (UInt64, Int) {
+public func uVarInt(_ buffer: [UInt8]) -> (UInt64, Int) {
     
     var output: UInt64 = 0
     var counter = 0
@@ -79,7 +79,7 @@ public func uVarInt(buffer: [UInt8]) -> (UInt64, Int) {
 
 /** putVarInt encodes an Int64 into a buffer and returns it.
 */
-public func putVarInt(value: Int64) -> [UInt8] {
+public func putVarInt(_ value: Int64) -> [UInt8] {
 
     var unsignedValue = UInt64(value) << 1
     
@@ -98,7 +98,7 @@ public func putVarInt(value: Int64) -> [UInt8] {
          n  < 0: value larger than 64 bits (overflow)
                  and -n is the number of bytes read
 */
-public func varInt(buffer: [UInt8]) -> (Int64, Int) {
+public func varInt(_ buffer: [UInt8]) -> (Int64, Int) {
     
     let (unsignedValue, bytesRead)  = uVarInt(buffer)
     var value                       = Int64(unsignedValue >> 1)
@@ -111,24 +111,24 @@ public func varInt(buffer: [UInt8]) -> (Int64, Int) {
 
 /** readUVarInt reads an encoded unsigned integer from the reader and returns
     it as an UInt64 */
-public func readUVarInt(reader: NSInputStream) throws -> UInt64 {
+public func readUVarInt(_ reader: InputStream) throws -> UInt64 {
 
     var value: UInt64   = 0
     var shifter: UInt64 = 0
     var index = 0
     
     repeat {
-        var buffer = [UInt8](count: 10, repeatedValue: 0)
+        var buffer = [UInt8](repeating: 0, count: 10)
         
         if reader.read(&buffer, maxLength: 1) < 0 {
-            throw VarIntError.InputStreamRead
+            throw VarIntError.inputStreamRead
         }
         
         let buf = buffer[0]
         
         if buf < 0x80 {
             if index > 9 || index == 9 && buf > 1 {
-                throw VarIntError.Overflow
+                throw VarIntError.overflow
             }
             return value | UInt64(buf) << shifter
         }
@@ -140,7 +140,7 @@ public func readUVarInt(reader: NSInputStream) throws -> UInt64 {
 
 /** readVarInt reads an encoded signed integer from the reader and returns
     it as an Int64 */
-public func readVarInt(reader: NSInputStream) throws -> Int64 {
+public func readVarInt(_ reader: InputStream) throws -> Int64 {
     
     let unsignedValue = try readUVarInt(reader)
     var value = Int64(unsignedValue >> 1)
