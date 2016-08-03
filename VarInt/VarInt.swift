@@ -28,7 +28,7 @@
 */
 import Foundation
 
-enum VarIntError : ErrorProtocol {
+enum VarIntError : Error {
     case inputStreamRead
     case overflow
 }
