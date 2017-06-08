@@ -40,7 +40,7 @@ public func putUVarInt(_ value: UInt64) -> [UInt8] {
     var val: UInt64 = value
     
     while val >= 0x80 {
-        buffer.append((UInt8(truncatingBitPattern: val) | 0x80))
+        buffer.append((UInt8(extendingOrTruncating: val) | 0x80))
         val >>= 7
     }
     
