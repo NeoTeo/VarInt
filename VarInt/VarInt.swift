@@ -81,11 +81,7 @@ public func uVarInt(_ buffer: [UInt8]) -> (UInt64, Int) {
 */
 public func putVarInt(_ value: Int64) -> [UInt8] {
 
-    var unsignedValue = UInt64(value) << 1
-    
-    if unsignedValue < 0 {
-        unsignedValue = ~unsignedValue
-    }
+    let unsignedValue = UInt64(value) << 1
     
     return putUVarInt(unsignedValue)
 }
